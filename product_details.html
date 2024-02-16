@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="assets/css/productDetails.css">
+    <title>Product Details</title>
+</head>
+<body>
+    <div id="productDetails">
+        <!-- Product details will be displayed here -->
+        <h1>Product Details</h1>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function(event) {
+            // Retrieve product data from local storage
+            const products = JSON.parse(localStorage.getItem("products"));
+
+            if (products && products.length > 0) {
+                const productDetailsContainer = document.getElementById("productDetails");
+
+                products.forEach((product, index) => {
+                    // Retrieve image data from local storage
+                    const imageData = localStorage.getItem(`productImage${index + 1}`);
+
+                    const truncatedName = truncateString(product.name,100);
+                    const discountValue = product.discountType === "percentage" ? `${product.discountValue}%` : `${product.discountValue}/-`;
+                    const productDetails = `
+                        <div class="productDetail">
+                            <img src="${imageData}" alt="Product Image"  style="width: 250px; height: 250px;"> 
+                            <h2>${capitalizeWords(truncatedName)}</h2> <!-- Capitalize product name -->
+                            <p class="discountValue">-${discountValue} Off</p>
+                            <p class="discountedPrice">₹${product.discountedPrice}</p><br>
+                            <p class="originalPrice">M.R.P.: ₹${product.price}</p><br>
+                            <p>Description: <br>${truncateDescription(product.description)}</p>
+                            <div class="buttonSet">
+                                <div class="quantitySelector" id="quantitySelector${index}">
+                                    <button class="quantityButton" onclick="decrementQuantity(${index})">-</button>
+                                    <span class="quantityDisplay" id="quantityDisplay${index}">1</span>
+                                    <button class="quantityButton" onclick="incrementQuantity(${index})">+</button>
+                                </div>
+                                <button class="addToCartButton" onclick="addToCart(${index}, ${product.quantity}, '${truncatedName}', ${product.discountedPrice})">Add to Cart</button>                            
+                            </div>
+                        </div>
+                    `;
+                    productDetailsContainer.innerHTML += productDetails;
+                });
+            } else {
+                // No products found in local storage
+                document.getElementById("productDetails").innerHTML = "<p>No products found.</p>";
+            }
+        });
+
+        // Function to capitalize the first letter of each word in a string
+        function capitalizeWords(str) {
+            return str.replace(/\b\w/g, function(char) {
+                return char.toUpperCase();
+            });
+        }
+
+        // Function to truncate a string if it exceeds a certain length
+        function truncateString(str, maxLength) {
+            if (str.length > maxLength) {
+                return str.substring(0, maxLength) + '...';
+            } else {
+                return str;
+            }
+        }
+
+        // Function to truncate the description
+        function truncateDescription(description) {
+            const maxLength = 500;
+            if (description.length > maxLength) {
+                return description.substring(0, maxLength) + "...";
+            }
+            return description;
+        }
+
+        // Function to decrement the quantity
+        function decrementQuantity(index) {
+            const quantityDisplay = document.getElementById(`quantityDisplay${index}`);
+            let quantity = parseInt(quantityDisplay.innerText);
+            if (quantity > 1) {
+                quantity--;
+                quantityDisplay.innerText = quantity;
+            }
+        }
+
+        // Function to increment the quantity
+        function incrementQuantity(index) {
+            const quantityDisplay = document.getElementById(`quantityDisplay${index}`);
+            let quantity = parseInt(quantityDisplay.innerText);
+            if (quantity < 10) {
+                quantity++;
+                quantityDisplay.innerText = quantity;
+            }
+        }
+
+        // Function to add the product to the cart and redirect to price_details page
+        function addToCart(index, productQuantity, productName, productPrice) {
+            const quantityDisplay = document.getElementById(`quantityDisplay${index}`);
+            const quantity = parseInt(quantityDisplay.innerText);
+
+            if (quantity > productQuantity) {
+                alert(`Quantity cannot exceed ${productQuantity}`);
+            } else {
+                // Collect pricing details
+                const pricingDetails = {
+                    productName: productName,
+                    productPrice: productPrice,
+                    quantity: quantity
+                };
+
+                // Encode pricing details as URI component
+                const encodedPricingDetails = encodeURIComponent(JSON.stringify(pricingDetails));
+
+                // Redirect to price_details page with pricing details in URL parameters
+                window.location.href = `pricing_details.html?details=${encodedPricingDetails}`;
+            }
+        }
+    </script>
+</body>
+</html>

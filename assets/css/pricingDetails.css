@@ -1,0 +1,37 @@
+body, h1, h2, p, ul, li {
+    margin: 0;
+    padding: 0;
+}
+h2 {
+    font-size: medium;
+}
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+body {
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    background-color: #f4f4f4;
+    padding: 20px;
+}
+#pricingDetails {
+    max-width: 600px;
+    margin: 0 auto;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+#pricingDetails ul {
+    list-style: none;
+}
+#pricingDetails li {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+@media (max-width: 768px) {
+    #pricingDetails {
+        padding: 15px;
+    }
+}
